@@ -26,9 +26,10 @@ public class Task {
     @ManyToMany
     private HashSet<User> employees;
 
-    public Task(String title, String description, LocalDateTime startTime, LocalDateTime endTime, long mainUserId) {
+    public Task(String title, String description, Status status, LocalDateTime startTime, LocalDateTime endTime, long mainUserId) {
         this.title = title;
         this.description = description;
+        this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
         this.mainUserId = mainUserId;

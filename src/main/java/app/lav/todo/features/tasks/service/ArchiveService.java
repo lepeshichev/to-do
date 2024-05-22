@@ -5,9 +5,11 @@ import app.lav.todo.features.tasks.entity.Task;
 import app.lav.todo.features.tasks.repository.ArchiveRepository;
 import app.lav.todo.features.tasks.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+@Service
 public class ArchiveService {
 
     private final TaskRepository taskRepository;
