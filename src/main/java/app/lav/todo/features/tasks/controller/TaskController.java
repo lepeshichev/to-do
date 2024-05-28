@@ -23,7 +23,7 @@ public class TaskController {
         try {
             taskService.addTask(UserData.getId(), addTaskRequestData.getTitle(), addTaskRequestData.getDescription(),
                     addTaskRequestData.getStatus(), addTaskRequestData.getStartTime(), addTaskRequestData.getEndTime());
-            // todo Добавить логгер
+            log.info("Добавление задачи");
             return ResponseEntity.ok().body("успешное добавление задачи");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -34,6 +34,7 @@ public class TaskController {
     public ResponseEntity<String> deleteTask(@PathVariable long taskId) {
         try {
             taskService.deleteTaskById(taskId);
+            log.info("Удаление задачи");
             return ResponseEntity.ok().body("Успешное удаление задачи");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -45,6 +46,7 @@ public class TaskController {
         try {
             taskService.updateTaskById(taskId, updateTaskRequestData.getTitle(), updateTaskRequestData.getDescription(),
                     updateTaskRequestData.getStatus(), updateTaskRequestData.getStartTime(), updateTaskRequestData.getEndTime());
+            log.info("Обновление информации о задаче");
             return ResponseEntity.ok().body("Успешное добавление задачи");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -55,6 +57,7 @@ public class TaskController {
     public ResponseEntity<String> getAllTasks(@PathVariable long userId) {
         try {
             taskService.getUserTasks(userId);
+            log.info("Получение информации о задачах пользователя");
             return ResponseEntity.ok().body("Успешное получение списка задач пользователя");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

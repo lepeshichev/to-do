@@ -45,4 +45,14 @@ public class ArchiveController {
             return ResponseEntity.badRequest().body(new ArrayList<>());
         }
     }
+    @DeleteMapping("/clearArchive")
+    public ResponseEntity<String> clearArchive() {
+        try {
+            taskService.clearArchive(UserData.getId());
+            log.info("Очищаем архив");
+            return ResponseEntity.ok().body("Успешное очищение архива");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
