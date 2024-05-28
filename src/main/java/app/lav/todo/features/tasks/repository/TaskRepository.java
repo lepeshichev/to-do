@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.ArrayList;
 
 public interface TaskRepository extends JpaRepository<Task,String> {
-    public void deleteById(long id);
+    void deleteById(long id);
 
     boolean existsById(long id);
 

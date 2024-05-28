@@ -1,11 +1,14 @@
 package app.lav.todo.features.tasks.service;
 
 import app.lav.todo.features.auth.repository.UserRepository;
+import app.lav.todo.features.tasks.entity.ArchivedTask;
 import app.lav.todo.features.tasks.entity.Status;
 import app.lav.todo.features.tasks.entity.Task;
+import app.lav.todo.features.tasks.repository.ArchiveTaskRepository;
 import app.lav.todo.features.tasks.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,14 +18,17 @@ import java.util.ArrayList;
 public class TaskService {
     private final TaskRepository taskRepository;
 
+    private final ArchiveTaskRepository archiveTaskRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository, ArchiveTaskRepository archiveTaskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
+        this.archiveTaskRepository = archiveTaskRepository;
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public void addTask(long userId, String title, String description, int statusInt, String startTimeString, String endTimeString) {
         if (startTimeString == null || endTimeString == null)
             throw new RuntimeException("Должно быть указано начальное и конечное время");
@@ -58,6 +64,7 @@ public class TaskService {
         }
     }
 
+    @Transactional
     public void deleteTaskById(long id) {
         if (taskRepository.existsById(id))
             taskRepository.deleteById(id);
@@ -65,6 +72,7 @@ public class TaskService {
             throw new RuntimeException("Не найдено такой задачи");
     }
 
+    @Transactional
     public void updateTaskById(long id, String title, String description, int statusInt, String startTimeString, String endTimeString) {
         Task task;
         if (!taskRepository.existsById(id))
@@ -94,8 +102,8 @@ public class TaskService {
         LocalDateTime startTime;
         LocalDateTime endTime;
         try {
-            startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-            endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+            startTime = LocalDateTime.parse(startTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd$HH:mm:ss"));
+            endTime = LocalDateTime.parse(endTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd$HH:mm:ss"));
         } catch (Exception e) {
             throw new RuntimeException("Неверный формат даты");
         }
@@ -128,11 +136,44 @@ public class TaskService {
         taskRepository.save(task);
     }
 
+    public Task getTaskById(long id) {
+        if (!taskRepository.existsById(id))
+            throw new RuntimeException("Такой задачи не существует");
+        else {
+            return taskRepository.findById(id);
+        }
+    }
+
+    public void moveTaskToArchive(long userId, Task task) {
+        if (!taskRepository.existsById(task.getId()))
+            throw new RuntimeException("Такой задачи не существует");
+        else {
+            archiveTaskRepository.save(new ArchivedTask(task.getTitle(), task.getDescription(), task.getStatus(),
+                    task.getStartTime(), task.getEndTime(), userId));
+        }
+    }
+
+    public void clearArchive(long id) {
+        if (!archiveTaskRepository.existsByMainUserId(id))
+            throw new RuntimeException("Такого архива не существует");
+        else {
+            archiveTaskRepository.deleteAllById(id);
+        }
+    }
+
     public ArrayList<Task> getUserTasks(long id) {
         if (userRepository.findById(id) == null)
             throw new RuntimeException("Такой пользователь не существует");
         else {
             return taskRepository.findAllByMainUserId(id);
+        }
+    }
+
+    public ArrayList<Task> getUserArchivedTasks(long id) {
+        if (!archiveTaskRepository.existsByMainUserId(id))
+            throw new RuntimeException("Такого архива не существует");
+        else {
+            return archiveTaskRepository.findAllByMainUserId(id);
         }
     }
 

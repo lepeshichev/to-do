@@ -1,6 +1,5 @@
 package app.lav.todo.features.tasks.entity;
 
-import app.lav.todo.features.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +7,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tasks")
 @Data
+@Table(name = "archived_tasks")
 @NoArgsConstructor
-public class Task {
+public class ArchivedTask {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -19,14 +18,13 @@ public class Task {
     private String description;
 
     private Status status;
-    @Column(name = "start_Time")
+    @Column(name = "startTime")
     private LocalDateTime startTime;
-    @Column(name = "end_Time")
+    @Column(name = "endTime")
     private LocalDateTime endTime;
-    @Column(name = "main_user_Id")
     private long mainUserId;
 
-    public Task(String title, String description, Status status, LocalDateTime startTime, LocalDateTime endTime, long mainUserId) {
+    public ArchivedTask(String title, String description, Status status, LocalDateTime startTime, LocalDateTime endTime, long mainUserId) {
         this.title = title;
         this.description = description;
         this.status = status;
